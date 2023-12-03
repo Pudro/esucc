@@ -11,7 +11,7 @@ Replication of the model found in NetLogo:
 
 import mesa
 
-from .agents import GrassPatch, Sheep, Wolf
+from .agents import SoilPatch, Grass, Bush, Tree
 from .scheduler import RandomActivationByTypeFiltered
 
 
@@ -50,9 +50,11 @@ class WolfSheep(mesa.Model):
         sheep_reproduce=0.04,
         wolf_reproduce=0.05,
         wolf_gain_from_food=20,
-        grass=False,
+        soil=False,
         grass_regrowth_time=30,
         sheep_gain_from_food=4,
+        grass_evolution_time = 5,
+        bush_evolution_time = 5,
     ):
         """
         Create a new Wolf-Sheep model with the given parameters.
@@ -77,53 +79,79 @@ class WolfSheep(mesa.Model):
         self.sheep_reproduce = sheep_reproduce
         self.wolf_reproduce = wolf_reproduce
         self.wolf_gain_from_food = wolf_gain_from_food
-        self.grass = grass
+        self.soil = soil
         self.grass_regrowth_time = grass_regrowth_time
         self.sheep_gain_from_food = sheep_gain_from_food
+
+        #added
+        self.grass_evolution_time = grass_evolution_time
+        self.bush_evolution_time = bush_evolution_time
+        ##
 
         self.schedule = RandomActivationByTypeFiltered(self)
         self.grid = mesa.space.MultiGrid(self.width, self.height, torus=True)
         self.datacollector = mesa.DataCollector(
             {
-                "Wolves": lambda m: m.schedule.get_type_count(Wolf),
-                "Sheep": lambda m: m.schedule.get_type_count(Sheep),
-                "Grass": lambda m: m.schedule.get_type_count(
-                    GrassPatch, lambda x: x.fully_grown
-                ),
+                # "Wolves": lambda m: m.schedule.get_type_count(Wolf),
+                # "Sheep": lambda m: m.schedule.get_type_count(Sheep),
+                # "Soil": lambda m: m.schedule.get_type_count(
+                #     SoilPatch, lambda x: x.fully_grown
+                # ),
             }
         )
 
         # Create sheep:
-        for i in range(self.initial_sheep):
-            x = self.random.randrange(self.width)
-            y = self.random.randrange(self.height)
-            energy = self.random.randrange(2 * self.sheep_gain_from_food)
-            sheep = Sheep(self.next_id(), (x, y), self, True, energy)
-            self.grid.place_agent(sheep, (x, y))
-            self.schedule.add(sheep)
+        # for i in range(self.initial_sheep):
+        #     x = self.random.randrange(self.width)
+        #     y = self.random.randrange(self.height)
+        #     energy = self.random.randrange(2 * self.sheep_gain_from_food)
+        #     sheep = Sheep(self.next_id(), (x, y), self, True, energy)
+        #     self.grid.place_agent(sheep, (x, y))
+        #     self.schedule.add(sheep)
 
         # Create wolves
-        for i in range(self.initial_wolves):
-            x = self.random.randrange(self.width)
-            y = self.random.randrange(self.height)
-            energy = self.random.randrange(2 * self.wolf_gain_from_food)
-            wolf = Wolf(self.next_id(), (x, y), self, True, energy)
-            self.grid.place_agent(wolf, (x, y))
-            self.schedule.add(wolf)
+        # for i in range(self.initial_wolves):
+        #     x = self.random.randrange(self.width)
+        #     y = self.random.randrange(self.height)
+        #     energy = self.random.randrange(2 * self.wolf_gain_from_food)
+        #     wolf = Wolf(self.next_id(), (x, y), self, True, energy)
+        #     self.grid.place_agent(wolf, (x, y))
+        #     self.schedule.add(wolf)
 
         # Create grass patches
-        if self.grass:
+        # if self.grass:
+        #     for agent, (x, y) in self.grid.coord_iter():
+        #         fully_grown = self.random.choice([True, False])
+
+        #         if fully_grown:
+        #             countdown = self.grass_regrowth_time
+        #         else:
+        #             countdown = self.random.randrange(self.grass_regrowth_time)
+
+        #         patch = GrassPatch(self.next_id(), (x, y), self, fully_grown, countdown)
+        #         self.grid.place_agent(patch, (x, y))
+        #         self.schedule.add(patch)
+
+        # Create soil patches
+        if self.soil:
             for agent, (x, y) in self.grid.coord_iter():
-                fully_grown = self.random.choice([True, False])
-
-                if fully_grown:
-                    countdown = self.grass_regrowth_time
-                else:
+                level = self.random.choice([0, 1, 2, 3])
+                if level > 0:
                     countdown = self.random.randrange(self.grass_regrowth_time)
-
-                patch = GrassPatch(self.next_id(), (x, y), self, fully_grown, countdown)
+                    grass = Grass(self.next_id(), (x, y), self,countdown)
+                    self.grid.place_agent(grass, (x, y))
+                    self.schedule.add(grass)
+                patch = SoilPatch(self.next_id(), (x, y), self, level)
                 self.grid.place_agent(patch, (x, y))
                 self.schedule.add(patch)
+
+        # for i in range(self.initial_wolves):
+        #     x = self.random.randrange(self.width)
+        #     y = self.random.randrange(self.height)
+        #     energy = self.random.randrange(2 * self.wolf_gain_from_food)
+        #     wolf = Wolf(self.next_id(), (x, y), self, True, energy)
+        #     self.grid.place_agent(wolf, (x, y))
+        #     self.schedule.add(wolf)
 
         self.running = True
         self.datacollector.collect(self)
@@ -136,19 +164,22 @@ class WolfSheep(mesa.Model):
             print(
                 [
                     self.schedule.time,
-                    self.schedule.get_type_count(Wolf),
-                    self.schedule.get_type_count(Sheep),
-                    self.schedule.get_type_count(GrassPatch, lambda x: x.fully_grown),
+                    # self.schedule.get_type_count(Wolf),
+                    # self.schedule.get_type_count(Sheep),
+                    self.schedule.get_type_count(Grass),
+                    self.schedule.get_type_count(Tree),
+                    self.schedule.get_type_count(Bush),
+                    self.schedule.get_type_count(SoilPatch), #, lambda x: x.fully_grown)
                 ]
             )
 
     def run_model(self, step_count=200):
         if self.verbose:
-            print("Initial number wolves: ", self.schedule.get_type_count(Wolf))
-            print("Initial number sheep: ", self.schedule.get_type_count(Sheep))
+            # print("Initial number wolves: ", self.schedule.get_type_count(Wolf))
+            # print("Initial number sheep: ", self.schedule.get_type_count(Sheep))
             print(
                 "Initial number grass: ",
-                self.schedule.get_type_count(GrassPatch, lambda x: x.fully_grown),
+                self.schedule.get_type_count(SoilPatch),
             )
 
         for i in range(step_count):
@@ -156,9 +187,9 @@ class WolfSheep(mesa.Model):
 
         if self.verbose:
             print("")
-            print("Final number wolves: ", self.schedule.get_type_count(Wolf))
-            print("Final number sheep: ", self.schedule.get_type_count(Sheep))
+            # print("Final number wolves: ", self.schedule.get_type_count(Wolf))
+            # print("Final number sheep: ", self.schedule.get_type_count(Sheep))
             print(
                 "Final number grass: ",
-                self.schedule.get_type_count(GrassPatch, lambda x: x.fully_grown),
+                self.schedule.get_type_count(SoilPatch),
             )
