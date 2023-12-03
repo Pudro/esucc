@@ -1,8 +1,10 @@
 import mesa
+import os
 
 from wolf_sheep.agents import GrassPatch, Sheep, Wolf
 from wolf_sheep.model import WolfSheep
 
+script_dir = os.path.dirname(os.path.realpath(__file__))
 
 def wolf_sheep_portrayal(agent):
     if agent is None:
@@ -11,13 +13,13 @@ def wolf_sheep_portrayal(agent):
     portrayal = {}
 
     if type(agent) is Sheep:
-        portrayal["Shape"] = "C:/Users/micha/Desktop/AS/esucc/wolf_sheep/resources/sheep.png"
+        portrayal["Shape"] = os.path.join(script_dir, "resources/sheep.png")
         # https://icons8.com/web-app/433/sheep
         portrayal["scale"] = 0.9
         portrayal["Layer"] = 1
 
     elif type(agent) is Wolf:
-        portrayal["Shape"] = "C:/Users/micha/Desktop/AS/esucc/wolf_sheep/resources/wolf.png"
+        portrayal["Shape"] = os.path.join(script_dir, "resources/wolf.png")
         # https://icons8.com/web-app/36821/German-Shepherd
         portrayal["scale"] = 0.9
         portrayal["Layer"] = 2
