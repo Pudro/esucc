@@ -11,7 +11,7 @@ Replication of the model found in NetLogo:
 
 import mesa
 
-from .agents import SoilPatch, Grass, Bush, Tree
+from .agents import SoilPatch, Grass, Bush, Tree, Mouse, Sheep, Cat, Wolf
 from .scheduler import RandomActivationByTypeFiltered
 
 
@@ -23,17 +23,15 @@ class WolfSheep(mesa.Model):
     height = 20
     width = 20
 
-    initial_sheep = 100
-    initial_wolves = 50
+    initial_sheep = 10
+    initial_wolves = 2
 
     sheep_reproduce = 0.04
     wolf_reproduce = 0.05
 
-    wolf_gain_from_food = 20
 
     grass = False
     grass_regrowth_time = 30
-    sheep_gain_from_food = 4
 
     grass_evolution_time = 5,
     bush_evolution_time = 5,
@@ -41,21 +39,31 @@ class WolfSheep(mesa.Model):
     verbose = False  # Print-monitoring
 
     description = (
-        "A model for simulating wolf and sheep (predator-prey) ecosystem modelling."
+        "A model simulating the phenomenon of ecological succession"
     )
 
     def __init__(
         self,
         width=20,
         height=20,
-        initial_sheep=100,
-        initial_wolves=50,
+        initial_mice=10,
+        initial_sheep=0,
+        initial_cats=4,
+        initial_wolves=0,
+        mouse_reproduce=0.04,
         sheep_reproduce=0.04,
+        cat_reproduce=0.05,
         wolf_reproduce=0.05,
-        wolf_gain_from_food=20,
+        mouse_reproduce_energy=4,
+        sheep_reproduce_energy=15,
+        cat_reproduce_energy=10,
+        wolf_reproduce_energy=20,
+        mouse_evolution_time=5,
+        sheep_evolution_time=5,
+        cat_evolution_time=5,
+        wolf_evolution_time=5,
         soil=False,
         grass_regrowth_time=30,
-        sheep_gain_from_food=4,
         grass_evolution_time = 5,
         bush_evolution_time = 5,
         soil_evolution_time = 5,
@@ -82,46 +90,86 @@ class WolfSheep(mesa.Model):
         self.initial_wolves = initial_wolves
         self.sheep_reproduce = sheep_reproduce
         self.wolf_reproduce = wolf_reproduce
-        self.wolf_gain_from_food = wolf_gain_from_food
         self.soil = soil
         self.grass_regrowth_time = grass_regrowth_time
-        self.sheep_gain_from_food = sheep_gain_from_food
 
         #added
+        self.initial_mice = initial_mice
+        self.initial_cats = initial_cats
+        self.mouse_reproduce = mouse_reproduce
+        self.cat_reproduce = cat_reproduce
+        self.mouse_reproduce_energy = mouse_reproduce_energy
+        self.sheep_reproduce_energy = sheep_reproduce_energy
+        self.cat_reproduce_energy = cat_reproduce_energy
+        self.wolf_reproduce_energy = wolf_reproduce_energy
+        self.mouse_evolution_time = mouse_evolution_time
+        self.sheep_evolution_time = sheep_evolution_time
+        self.cat_evolution_time = cat_evolution_time
+        self.wolf_evolution_time = wolf_evolution_time
+
         self.grass_evolution_time = grass_evolution_time
         self.bush_evolution_time = bush_evolution_time
         self.soil_evolution_time = soil_evolution_time
+
+        self.food_energies = {
+            Grass: 4,
+            Bush: 8,
+            Tree: 12,
+            Mouse: 8,
+            Sheep: 20,
+            Cat: 12,
+        }
         ##
 
         self.schedule = RandomActivationByTypeFiltered(self)
         self.grid = mesa.space.MultiGrid(self.width, self.height, torus=True)
         self.datacollector = mesa.DataCollector(
             {
-                # "Wolves": lambda m: m.schedule.get_type_count(Wolf),
-                # "Sheep": lambda m: m.schedule.get_type_count(Sheep),
-                # "Soil": lambda m: m.schedule.get_type_count(
-                #     SoilPatch, lambda x: x.fully_grown
-                # ),
+                "Mice": lambda m: m.schedule.get_type_count(Mouse),
+                "Cats": lambda m: m.schedule.get_type_count(Cat),
+                "Wolves": lambda m: m.schedule.get_type_count(Wolf),
+                "Sheep": lambda m: m.schedule.get_type_count(Sheep),
+                "Grass": lambda m: m.schedule.get_type_count(Grass),
+                "Bush": lambda m: m.schedule.get_type_count(Bush),
+                "Tree": lambda m: m.schedule.get_type_count(Tree),
             }
         )
 
+        # Create mouse:
+        for i in range(self.initial_mice):
+            x = self.random.randrange(self.width)
+            y = self.random.randrange(self.height)
+            energy = self.random.randrange(10)
+            mouse = Mouse(self.next_id(), (x, y), self, True, energy)
+            self.grid.place_agent(mouse, (x, y))
+            self.schedule.add(mouse)
+
         # Create sheep:
-        # for i in range(self.initial_sheep):
-        #     x = self.random.randrange(self.width)
-        #     y = self.random.randrange(self.height)
-        #     energy = self.random.randrange(2 * self.sheep_gain_from_food)
-        #     sheep = Sheep(self.next_id(), (x, y), self, True, energy)
-        #     self.grid.place_agent(sheep, (x, y))
-        #     self.schedule.add(sheep)
+        for i in range(self.initial_sheep):
+            x = self.random.randrange(self.width)
+            y = self.random.randrange(self.height)
+            energy = self.random.randrange(20)
+            sheep = Sheep(self.next_id(), (x, y), self, True, energy)
+            self.grid.place_agent(sheep, (x, y))
+            self.schedule.add(sheep)
+
+        # Create cats:
+        for i in range(self.initial_cats):
+            x = self.random.randrange(self.width)
+            y = self.random.randrange(self.height)
+            energy = self.random.randrange(20)
+            cat = Cat(self.next_id(), (x, y), self, True, energy)
+            self.grid.place_agent(cat, (x, y))
+            self.schedule.add(cat)
 
         # Create wolves
-        # for i in range(self.initial_wolves):
-        #     x = self.random.randrange(self.width)
-        #     y = self.random.randrange(self.height)
-        #     energy = self.random.randrange(2 * self.wolf_gain_from_food)
-        #     wolf = Wolf(self.next_id(), (x, y), self, True, energy)
-        #     self.grid.place_agent(wolf, (x, y))
-        #     self.schedule.add(wolf)
+        for i in range(self.initial_wolves):
+            x = self.random.randrange(self.width)
+            y = self.random.randrange(self.height)
+            energy = self.random.randrange(30)
+            wolf = Wolf(self.next_id(), (x, y), self, True, energy)
+            self.grid.place_agent(wolf, (x, y))
+            self.schedule.add(wolf)
 
         # Create grass patches
         # if self.grass:
