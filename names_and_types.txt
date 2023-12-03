@@ -1,0 +1,15 @@
+gleba -> 0, 1, 2, 3
+
+rośliny -> zawsze trawa od 1 na start, jeżeli więcej to może eoluować stopniowo, krzak na 2 i 3, i drzewo na 3
+
+	czas wzrostu
+
+zwierzęta -> roślinożerne: (jeden je trawe tylko drugi je krzaki i drzewa) , mięsożerne (dwa gatunki: jeden małe, drugi duże)
+
+SoilPatch
+
+Grass (
+Bush
+Tree 
+	
+
