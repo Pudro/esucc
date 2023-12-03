@@ -35,6 +35,9 @@ class WolfSheep(mesa.Model):
     grass_regrowth_time = 30
     sheep_gain_from_food = 4
 
+    grass_evolution_time = 5,
+    bush_evolution_time = 5,
+
     verbose = False  # Print-monitoring
 
     description = (
@@ -55,6 +58,7 @@ class WolfSheep(mesa.Model):
         sheep_gain_from_food=4,
         grass_evolution_time = 5,
         bush_evolution_time = 5,
+        soil_evolution_time = 5,
     ):
         """
         Create a new Wolf-Sheep model with the given parameters.
@@ -86,6 +90,7 @@ class WolfSheep(mesa.Model):
         #added
         self.grass_evolution_time = grass_evolution_time
         self.bush_evolution_time = bush_evolution_time
+        self.soil_evolution_time = soil_evolution_time
         ##
 
         self.schedule = RandomActivationByTypeFiltered(self)

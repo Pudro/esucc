@@ -108,9 +108,20 @@ class SoilPatch(mesa.Agent):
         super().__init__(unique_id, model)
         self.level = level
         self.pos = pos
+        self.countup = 0
 
     def step(self):
-        pass
+        this_cell = self.model.grid.get_cell_list_contents([self.pos])
+        cell_obj = [obj for obj in this_cell if isinstance(obj, (Tree, Grass, Bush))]
+
+        if len(cell_obj) == 0:
+            self.countup += 1
+            if self.countup > self.model.soil_evolution_time and self.level >= 1:
+                grass = Grass(self.model.next_id(), self.pos, self.model,self.model.grass_regrowth_time)
+                self.model.grid.place_agent(grass, self.pos)
+                self.model.schedule.add(grass)
+                self.countup = 0
+
 
 class Grass(mesa.Agent):
     """

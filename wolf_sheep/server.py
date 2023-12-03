@@ -104,6 +104,7 @@ model_params = {
     "sheep_gain_from_food": mesa.visualization.Slider("Sheep Gain From Food", 4, 1, 10),
     "grass_evolution_time": mesa.visualization.Slider("Grass evolution time", 4, 1, 10),
     "bush_evolution_time": mesa.visualization.Slider("Bush evolution time", 4, 1, 10),
+    "soil_evolution_time": mesa.visualization.Slider("Soil evolution time", 4, 1, 10),
 
 }
 
