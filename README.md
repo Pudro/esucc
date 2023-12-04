@@ -1,4 +1,4 @@
-# Wolf-Sheep Predation Model
+# Ecological Succession Model
 
 ## Summary
 
