@@ -1,6 +1,7 @@
 import mesa
 
 from .random_walk import RandomWalker
+from .predator import Predator
 
 
 class Mouse(RandomWalker):
@@ -99,18 +100,18 @@ class Sheep(RandomWalker):
             self.model.grid.place_agent(lamb, self.pos)
             self.model.schedule.add(lamb)
 
-class Cat(RandomWalker):
+class Cat(Predator):
     """
     A cat that walks around, reproduces (asexually) and eats mice.
     """
     def __init__(self, unique_id, pos, model, moore, energy=None, max_energy=50, reproduction_threshold=None):
-        super().__init__(unique_id, pos, model)
+        super().__init__(unique_id, pos, model, prey=(Mouse))
         self.energy = energy
         self.countup = 0
 
     def step(self):
         self.countup += 1
-        self.random_move()
+        self.hunt()
         # Bigger animals have bigger energy requirements
         self.energy -= 1
 
@@ -149,16 +150,16 @@ class Cat(RandomWalker):
             self.model.grid.place_agent(wolf, pos)
             self.model.schedule.add(wolf)
 
-class Wolf(RandomWalker):
+class Wolf(Predator):
     """
     A wolf that walks around, reproduces (asexually) and eats cats, sheep and mice.
     """
     def __init__(self, unique_id, pos, model, moore, energy=None, max_energy=50, reproduction_threshold=None):
-        super().__init__(unique_id, pos, model, moore=moore)
+        super().__init__(unique_id, pos, model, prey=(Sheep, Mouse), moore=moore)
         self.energy = energy
 
     def step(self):
-        self.random_move()
+        self.hunt()
         # Bigger animals have bigger energy requirements
         self.energy -= 2
 
