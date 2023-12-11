@@ -205,6 +205,10 @@ class SoilPatch(mesa.Agent):
         self.level = level
         self.pos = pos
         self.countup = 0
+        self.countup_tree = 0
+        self.countup_bush = 0
+        self.countup_grass = 0
+
 
     def step(self):
         this_cell = self.model.grid.get_cell_list_contents([self.pos])
@@ -217,6 +221,31 @@ class SoilPatch(mesa.Agent):
                 self.model.grid.place_agent(grass, self.pos)
                 self.model.schedule.add(grass)
                 self.countup = 0
+        else:
+            
+            if isinstance(cell_obj[0], (Tree)):
+                self.countup_tree += 1
+                if self.countup_tree > 200:
+                    self.level -= 1
+                    self.countup_tree = 0
+                    self.model.grid.remove_agent(cell_obj[0])
+                    self.model.schedule.remove(cell_obj[0])
+            elif isinstance(cell_obj[0], (Bush)):
+                self.countup_bush += 1
+                if self.countup_bush > 100 and self.level < 4:
+                    self.level += 1
+                    self.countup_bush = 0
+                # self.model.grid.remove_agent(cell_obj[0])
+                # self.model.schedule.remove(cell_obj[0])
+            elif isinstance(cell_obj[0], (Grass)):
+                self.countup_grass += 1
+                if self.countup_grass > 150 and self.level < 4:
+                    self.level += 1
+                    self.countup_grass = 0
+                # self.model.grid.remove_agent(cell_obj[0])
+                # self.model.schedule.remove(cell_obj[0])
+
+                
 
 
 class Grass(mesa.Agent):
