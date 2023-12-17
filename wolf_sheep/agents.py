@@ -384,7 +384,6 @@ class FirePatch(mesa.Agent):
         self.pos = pos
 
     def step(self):
-        print('STEP OF FIRE')
         self.model.grid.remove_agent(self)
         self.model.schedule.remove(self)
 
