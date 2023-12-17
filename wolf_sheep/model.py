@@ -11,8 +11,9 @@ Replication of the model found in NetLogo:
 
 import mesa
 
-from .agents import SoilPatch, Grass, Bush, Tree, Mouse, Sheep, Cat, Wolf
+from .agents import SoilPatch, Grass, Bush, Tree, Mouse, Sheep, Cat, Wolf, FirePatch
 from .scheduler import RandomActivationByTypeFiltered
+import random
 
 
 class WolfSheep(mesa.Model):
@@ -93,7 +94,10 @@ class WolfSheep(mesa.Model):
         self.soil = soil
         self.grass_regrowth_time = grass_regrowth_time
 
-        #added
+        # counter
+        self.cnt = 1
+
+        # added
         self.initial_mice = initial_mice
         self.initial_cats = initial_cats
         self.mouse_reproduce = mouse_reproduce
@@ -211,6 +215,7 @@ class WolfSheep(mesa.Model):
 
     def step(self):
         self.schedule.step()
+        self.cnt += 1
         # collect data
         self.datacollector.collect(self)
         if self.verbose:
@@ -225,6 +230,7 @@ class WolfSheep(mesa.Model):
                     self.schedule.get_type_count(SoilPatch), #, lambda x: x.fully_grown)
                 ]
             )
+        self.forest_fire()
 
     def run_model(self, step_count=200):
         if self.verbose:
@@ -246,3 +252,20 @@ class WolfSheep(mesa.Model):
                 "Final number grass: ",
                 self.schedule.get_type_count(SoilPatch),
             )
+
+    def forest_fire(self, period=100):
+        if self.cnt % period == 0:
+            total_cells = self.width * self.height
+            cells_to_kill = random.sample(list(self.grid.coord_iter()), int(0.8*total_cells))
+            print(cells_to_kill)
+
+            for agents, (x, y) in cells_to_kill:
+                # cell_content, x, y = self.grid[x][y]
+                if agents:
+                    for agent in agents:
+                        if not isinstance(agent, SoilPatch):
+                            self.grid.remove_agent(agent)
+                            self.schedule.remove(agent)
+                    fire = FirePatch(self.next_id(), (x, y), self)
+                    self.grid.place_agent(fire, (x, y))
+                    self.schedule.add(fire)

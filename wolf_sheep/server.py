@@ -1,7 +1,7 @@
 import mesa
 import os
 
-from wolf_sheep.agents import SoilPatch, Grass, Bush, Tree, Mouse, Sheep, Cat, Wolf
+from wolf_sheep.agents import SoilPatch, Grass, Bush, Tree, Mouse, Sheep, Cat, Wolf, FirePatch
 from wolf_sheep.model import WolfSheep
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -74,6 +74,11 @@ def wolf_sheep_portrayal(agent):
         portrayal["scale"] = 0.9
         portrayal["Layer"] = 2
 
+    elif type(agent) is FirePatch:
+        portrayal["Shape"] = os.path.join(script_dir, "resources/fire.png")
+        # https://icons8.com/web-app/36821/German-Shepherd
+        portrayal["scale"] = 0.9
+        portrayal["Layer"] = 3
 
     return portrayal
 

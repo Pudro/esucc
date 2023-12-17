@@ -374,6 +374,21 @@ class Tree(mesa.Agent):
     def step(self):
         pass
 
+
+class FirePatch(mesa.Agent):
+    def __init__(self, unique_id, pos, model):
+        """
+        Fire Patch for visualization only
+        """
+        super().__init__(unique_id, model)
+        self.pos = pos
+
+    def step(self):
+        print('STEP OF FIRE')
+        self.model.grid.remove_agent(self)
+        self.model.schedule.remove(self)
+
+
 # class GrassPatch(mesa.Agent):
 #     """
 #     A patch of grass that grows at a fixed rate and it is eaten by sheep
