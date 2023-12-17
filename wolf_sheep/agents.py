@@ -2,6 +2,7 @@ import mesa
 
 from .random_walk import RandomWalker
 from .predator import Predator
+import random
 
 
 class Mouse(RandomWalker):
@@ -217,7 +218,7 @@ class SoilPatch(mesa.Agent):
 
         if len(cell_obj) == 0:
             self.countup += 1
-            if self.countup > self.model.soil_evolution_time and self.level >= 1:
+            if self.countup > self.model.soil_evolution_time and self.level >= 1 and random.random() < 0.3:
                 grass = Grass(self.model.next_id(), self.pos, self.model,self.model.grass_regrowth_time)
                 self.model.grid.place_agent(grass, self.pos)
                 self.model.schedule.add(grass)
@@ -226,21 +227,21 @@ class SoilPatch(mesa.Agent):
             
             if isinstance(cell_obj[0], (Tree)):
                 self.countup_tree += 1
-                if self.countup_tree > 200:
+                if self.countup_tree > 200 and random.random() < 0.3:
                     self.level -= 1
                     self.countup_tree = 0
                     self.model.grid.remove_agent(cell_obj[0])
                     self.model.schedule.remove(cell_obj[0])
             elif isinstance(cell_obj[0], (Bush)):
                 self.countup_bush += 1
-                if self.countup_bush > 100 and self.level < 4:
+                if self.countup_bush > 100 and self.level < 4 and random.random() < 0.2:
                     self.level += 1
                     self.countup_bush = 0
                 # self.model.grid.remove_agent(cell_obj[0])
                 # self.model.schedule.remove(cell_obj[0])
             elif isinstance(cell_obj[0], (Grass)):
                 self.countup_grass += 1
-                if self.countup_grass > 150 and self.level < 4:
+                if self.countup_grass > 150 and self.level < 4 and random.random() < 0.3:
                     self.level += 1
                     self.countup_grass = 0
                 # self.model.grid.remove_agent(cell_obj[0])
