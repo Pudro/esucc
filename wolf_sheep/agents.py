@@ -47,15 +47,15 @@ class Mouse(RandomWalker):
                 )
                 self.model.grid.place_agent(mouse, mouse.pos)
                 self.model.schedule.add(mouse)
-        if self.energy > self.model.mouse_reproduce_energy and self.countup > self.model.mouse_evolution_time:
-            pos = self.pos
-            self.model.grid.remove_agent(self)
-            self.model.schedule.remove(self)
-            sheep = Sheep(
-                self.model.next_id(), self.pos, self.model, self.moore, self.energy
-            )
-            self.model.grid.place_agent(sheep, pos)
-            self.model.schedule.add(sheep)
+        # if self.energy > self.model.mouse_reproduce_energy and self.countup > self.model.mouse_evolution_time:
+        #     pos = self.pos
+        #     self.model.grid.remove_agent(self)
+        #     self.model.schedule.remove(self)
+        #     sheep = Sheep(
+        #         self.model.next_id(), self.pos, self.model, self.moore, self.energy
+        #     )
+        #     self.model.grid.place_agent(sheep, pos)
+        #     self.model.schedule.add(sheep)
 
 class Sheep(RandomWalker):
     """
@@ -141,15 +141,15 @@ class Cat(Predator):
                 )
                 self.model.grid.place_agent(kitty, kitty.pos)
                 self.model.schedule.add(kitty)
-        if self.energy > self.model.cat_reproduce_energy and self.countup > self.model.cat_evolution_time:
-            pos = self.pos
-            self.model.grid.remove_agent(self)
-            self.model.schedule.remove(self)
-            wolf = Wolf(
-                self.model.next_id(), self.pos, self.model, self.moore, self.energy
-            )
-            self.model.grid.place_agent(wolf, pos)
-            self.model.schedule.add(wolf)
+        #if self.energy > self.model.cat_reproduce_energy and self.countup > self.model.cat_evolution_time:
+        #    pos = self.pos
+        #    self.model.grid.remove_agent(self)
+        #    self.model.schedule.remove(self)
+        #    wolf = Wolf(
+        #        self.model.next_id(), self.pos, self.model, self.moore, self.energy
+        #    )
+        #    self.model.grid.place_agent(wolf, pos)
+        #    self.model.schedule.add(wolf)
 
 class Wolf(Predator):
     """
