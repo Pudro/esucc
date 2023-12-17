@@ -84,15 +84,19 @@ def wolf_sheep_portrayal(agent):
 
 
 canvas_element = mesa.visualization.CanvasGrid(wolf_sheep_portrayal, 20, 20, 500, 500)
-chart_element = mesa.visualization.ChartModule(
+plant_chart = mesa.visualization.ChartModule(
+    [
+        {"Label": "Grass", "Color": "#00EA00"},
+        {"Label": "Bush", "Color": "#33AA33"},
+        {"Label": "Tree", "Color": "#BBFFBB"}
+    ]
+)
+animal_chart = mesa.visualization.ChartModule(
     [
         {"Label": "Cats", "Color": "#AA0000"},
         {"Label": "Wolves", "Color": "#0000AA"},
         {"Label": "Mice", "Color": "#666666"},
-        {"Label": "Sheep", "Color": "#660066"},
-        {"Label": "Grass", "Color": "#00EA00"},
-        {"Label": "Bush", "Color": "#33AA33"},
-        {"Label": "Tree", "Color": "#BBFFBB"},
+        {"Label": "Sheep", "Color": "#660066"}
     ]
 )
 
@@ -139,6 +143,6 @@ model_params = {
 }
 
 server = mesa.visualization.ModularServer(
-    WolfSheep, [canvas_element, chart_element], "Ecological Succession", model_params
+    WolfSheep, [canvas_element, plant_chart, animal_chart], "Ecological Succession", model_params
 )
 server.port = 8521
