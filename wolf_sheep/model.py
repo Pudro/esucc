@@ -231,6 +231,7 @@ class WolfSheep(mesa.Model):
                 ]
             )
         self.forest_fire()
+        self.migration()
 
     def run_model(self, step_count=200):
         if self.verbose:
@@ -269,3 +270,29 @@ class WolfSheep(mesa.Model):
                     fire = FirePatch(self.next_id(), (x, y), self)
                     self.grid.place_agent(fire, (x, y))
                     self.schedule.add(fire)
+
+    def migration(self):
+        x = self.random.randrange(self.width)
+        y = self.random.randrange(self.height)
+
+        match random.random():
+            case p if 0.0 < p < 0.02:
+                energy = self.random.randrange(30)
+                agent = Wolf(self.next_id(), (x, y), self, True, energy)
+                self.grid.place_agent(agent, (x, y))
+                self.schedule.add(agent)
+            case p if 0.02 < p < 0.06:
+                energy = self.random.randrange(20)
+                agent = Cat(self.next_id(), (x, y), self, True, energy)
+                self.grid.place_agent(agent, (x, y))
+                self.schedule.add(agent)
+            case p if 0.06 < p < 0.14:
+                energy = self.random.randrange(20)
+                agent = Sheep(self.next_id(), (x, y), self, True, energy)
+                self.grid.place_agent(agent, (x, y))
+                self.schedule.add(agent)
+            case p if 0.14 < p < 0.24:
+                energy = self.random.randrange(10)
+                agent = Mouse(self.next_id(), (x, y), self, True, energy)
+                self.grid.place_agent(agent, (x, y))
+                self.schedule.add(agent)
